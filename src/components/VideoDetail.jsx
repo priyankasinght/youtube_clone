@@ -19,7 +19,7 @@ const VideoDetails = () => {
         document.getElementById("root").classList.add("custom-h");
         fetchVideoDetails();
         fetchRelatedVideos();
-    }, );
+    }, [id]);
 
     const fetchVideoDetails = () => {
         setLoading(true);
