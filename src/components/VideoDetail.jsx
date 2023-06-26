@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import ReactPlayer from "react-player/youtube";
 import { BsFillCheckCircleFill } from "react-icons/bs";
@@ -15,29 +15,29 @@ const VideoDetails = () => {
     const { id } = useParams();
     const { setLoading } = useContext(Context);
 
-    useEffect(() => {
-        document.getElementById("root").classList.add("custom-h");
-        fetchVideoDetails();
-        fetchRelatedVideos();
-    }, [id]);
-
-    const fetchVideoDetails = () => {
+    const fetchVideoDetails = useCallback(() => {
         setLoading(true);
         fetchDataFromApi(`video/details/?id=${id}`).then((res) => {
             console.log(res);
             setVideo(res);
             setLoading(false);
         });
-    };
+    }, [id, setLoading]);
 
-    const fetchRelatedVideos = () => {
+    const fetchRelatedVideos = useCallback(() => {
         setLoading(true);
         fetchDataFromApi(`video/related-contents/?id=${id}`).then((res) => {
             console.log(res);
             setRelatedVideos(res);
             setLoading(false);
         });
-    };
+    }, [id, setLoading]);
+
+    useEffect(() => {
+        document.getElementById("root").classList.add("custom-h");
+        fetchVideoDetails();
+        fetchRelatedVideos();
+    }, [id, fetchVideoDetails, fetchRelatedVideos]);
 
     return (
         <div className="flex justify-center flex-row h-[calc(100%-56px)] bg-black">
@@ -60,7 +60,8 @@ const VideoDetails = () => {
                         <div className="flex">
                             <div className="flex items-start">
                                 <div className="flex h-11 w-11 rounded-full overflow-hidden">
-                                    <img alt=""
+                                    <img
+                                        alt=""
                                         className="h-full w-full object-cover"
                                         src={video?.author?.avatar[0]?.url}
                                     />
